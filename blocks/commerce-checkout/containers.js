@@ -44,6 +44,9 @@ import CreditCard from '@dropins/storefront-payment-services/containers/CreditCa
 import GooglePay from '@dropins/storefront-payment-services/containers/GooglePay.js';
 import { render as PaymentServices } from '@dropins/storefront-payment-services/render.js';
 
+// Order Dropin Modules
+import * as orderApi from '@dropins/storefront-order/api.js';
+
 // Tools
 import {
   Header,
@@ -339,48 +342,11 @@ export const renderShippingMethods = async (container) => renderContainer(
  * @param {Object} creditCardFormRef - React-style ref for credit card form
  * @returns {Promise<Object>} - The rendered payment methods component
  */
-export const renderPaymentMethods = async (container, creditCardFormRef) => renderContainer(
+export const renderPaymentMethods = async (container, creditCardFormRef, handleValidation) => renderContainer(
   CONTAINERS.PAYMENT_METHODS,
   async () => CheckoutProvider.render(PaymentMethods, {
     slots: {
       Methods: {
-        checkmo: {
-          render: (ctx) => {
-            const $creditCard = document.createElement('div');
-
-            PaymentServices.render(CreditCard, {
-              getCartId: () => ctx.cartId,
-              creditCardFormRef,
-            })($creditCard);
-
-            ctx.replaceHTML($creditCard);
-
-            // const $creditCard = document.createElement('div');
-
-            // PaymentServices.render(GooglePay, {
-            //   getCartId: () => ctx.cartId,
-            //   location: 'CHECKOUT',
-            //   onSuccess: (data) => {
-            //     console.log('onSuccess', data);
-            //   },
-            //   onError: (data) => {
-            //     console.error('onError', data);
-            //   },
-            //   getBillingAddress: () => ({
-            //     city: 'San Francisco',
-            //     country_code: 'US',
-            //     firstname: 'John',
-            //     lastname: 'Doe',
-            //     postcode: '94107',
-            //     region: 'CA',
-            //     street: ['123 Townsend'],
-            //     telephone: '5555555555',
-            //   }),
-            // })($creditCard);
-
-            // ctx.replaceHTML($creditCard);
-          },
-        },
         [PaymentMethodCode.CREDIT_CARD]: {
           render: (ctx) => {
             const $creditCard = document.createElement('div');
@@ -400,7 +366,27 @@ export const renderPaymentMethods = async (container, creditCardFormRef) => rend
           enabled: false,
         },
         [PaymentMethodCode.GOOGLE_PAY]: {
-          enabled: false,
+          render: (ctx) => {
+            const $googlePay = document.createElement('div');
+
+            PaymentServices.render(GooglePay, {
+              getCartId: () => ctx.cartId,
+              location: 'CHECKOUT',
+              onSuccess: () => {
+                orderApi.placeOrder(ctx.cartId);
+              },
+              onError: (data) => {
+                console.error('onError', data);
+              },
+              onButtonClick: (showPaymentSheet) => {
+                if (handleValidation()) {
+                  showPaymentSheet();
+                }
+              },
+            })($googlePay);
+
+            ctx.replaceHTML($googlePay);
+          },
         },
         [PaymentMethodCode.VAULT]: {
           enabled: false,
