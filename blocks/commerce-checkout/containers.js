@@ -41,6 +41,7 @@ import { render as CartProvider } from '@dropins/storefront-cart/render.js';
 // Payment Services Dropin
 import { PaymentMethodCode } from '@dropins/storefront-payment-services/api.js';
 import CreditCard from '@dropins/storefront-payment-services/containers/CreditCard.js';
+import GooglePay from '@dropins/storefront-payment-services/containers/GooglePay.js';
 import { render as PaymentServices } from '@dropins/storefront-payment-services/render.js';
 
 // Tools
@@ -343,6 +344,43 @@ export const renderPaymentMethods = async (container, creditCardFormRef) => rend
   async () => CheckoutProvider.render(PaymentMethods, {
     slots: {
       Methods: {
+        checkmo: {
+          render: (ctx) => {
+            const $creditCard = document.createElement('div');
+
+            PaymentServices.render(CreditCard, {
+              getCartId: () => ctx.cartId,
+              creditCardFormRef,
+            })($creditCard);
+
+            ctx.replaceHTML($creditCard);
+
+            // const $creditCard = document.createElement('div');
+
+            // PaymentServices.render(GooglePay, {
+            //   getCartId: () => ctx.cartId,
+            //   location: 'CHECKOUT',
+            //   onSuccess: (data) => {
+            //     console.log('onSuccess', data);
+            //   },
+            //   onError: (data) => {
+            //     console.error('onError', data);
+            //   },
+            //   getBillingAddress: () => ({
+            //     city: 'San Francisco',
+            //     country_code: 'US',
+            //     firstname: 'John',
+            //     lastname: 'Doe',
+            //     postcode: '94107',
+            //     region: 'CA',
+            //     street: ['123 Townsend'],
+            //     telephone: '5555555555',
+            //   }),
+            // })($creditCard);
+
+            // ctx.replaceHTML($creditCard);
+          },
+        },
         [PaymentMethodCode.CREDIT_CARD]: {
           render: (ctx) => {
             const $creditCard = document.createElement('div');

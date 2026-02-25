@@ -22,7 +22,7 @@ fs.readdirSync('node_modules/@dropins', { withFileTypes: true }).forEach((file) 
   }
 
   // Skip if is not folder
-  if (!file.isDirectory()) {
+  if (!file.isDirectory() && !file.isSymbolicLink()) {
     return;
   }
   fs.cpSync(path.join('node_modules', '@dropins', file.name), path.join(dropinsDir, file.name), {
