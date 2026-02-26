@@ -206,7 +206,7 @@ export default async function decorate(block) {
 
     renderShippingMethods($delivery),
 
-    renderPaymentMethods($paymentMethods, creditCardFormRef, handleValidation),
+    renderPaymentMethods($paymentMethods, creditCardFormRef, $placeOrder, handleValidation),
 
     renderBillingAddressFormSkeleton($billingForm),
 
