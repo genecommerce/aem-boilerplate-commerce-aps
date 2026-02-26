@@ -345,7 +345,7 @@ export const renderShippingMethods = async (container) => renderContainer(
 export const renderPaymentMethods = async (container, creditCardFormRef, $placeOrder, handleValidation) => {
   events.on('checkout/values', ({ selectedPaymentMethod }) => {
     // Hide/show the place order button based on whether a payment method is selected
-    const display = selectedPaymentMethod.code === 'payment_services_paypal_google_pay' ? 'none' : 'block';
+    const display = selectedPaymentMethod?.code === 'payment_services_paypal_google_pay' ? 'none' : 'block';
     $placeOrder.style.display = display;
   });
 
