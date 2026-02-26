@@ -342,62 +342,70 @@ export const renderShippingMethods = async (container) => renderContainer(
  * @param {Object} creditCardFormRef - React-style ref for credit card form
  * @returns {Promise<Object>} - The rendered payment methods component
  */
-export const renderPaymentMethods = async (container, creditCardFormRef, handleValidation) => renderContainer(
-  CONTAINERS.PAYMENT_METHODS,
-  async () => CheckoutProvider.render(PaymentMethods, {
-    slots: {
-      Methods: {
-        [PaymentMethodCode.CREDIT_CARD]: {
-          render: (ctx) => {
-            const $creditCard = document.createElement('div');
+export const renderPaymentMethods = async (container, creditCardFormRef, $placeOrder, handleValidation) => {
+  events.on('checkout/values', ({ selectedPaymentMethod }) => {
+    // Hide/show the place order button based on whether a payment method is selected
+    const display = selectedPaymentMethod.code === 'payment_services_paypal_google_pay' ? 'none' : 'block';
+    $placeOrder.style.display = display;
+  });
 
-            PaymentServices.render(CreditCard, {
-              getCartId: () => ctx.cartId,
-              creditCardFormRef,
-            })($creditCard);
+  return renderContainer(
+    CONTAINERS.PAYMENT_METHODS,
+    async () => CheckoutProvider.render(PaymentMethods, {
+      slots: {
+        Methods: {
+          [PaymentMethodCode.CREDIT_CARD]: {
+            render: (ctx) => {
+              const $creditCard = document.createElement('div');
 
-            ctx.replaceHTML($creditCard);
+              PaymentServices.render(CreditCard, {
+                getCartId: () => ctx.cartId,
+                creditCardFormRef,
+              })($creditCard);
+
+              ctx.replaceHTML($creditCard);
+            },
           },
-        },
-        [PaymentMethodCode.SMART_BUTTONS]: {
-          enabled: false,
-        },
-        [PaymentMethodCode.APPLE_PAY]: {
-          enabled: false,
-        },
-        [PaymentMethodCode.GOOGLE_PAY]: {
-          render: (ctx) => {
-            const $googlePay = document.createElement('div');
-
-            PaymentServices.render(GooglePay, {
-              getCartId: () => ctx.cartId,
-              location: 'CHECKOUT',
-              onSuccess: () => {
-                orderApi.placeOrder(ctx.cartId);
-              },
-              onError: (data) => {
-                console.error('onError', data);
-              },
-              onButtonClick: (showPaymentSheet) => {
-                if (handleValidation()) {
-                  showPaymentSheet();
-                }
-              },
-            })($googlePay);
-
-            ctx.replaceHTML($googlePay);
+          [PaymentMethodCode.SMART_BUTTONS]: {
+            enabled: false,
           },
-        },
-        [PaymentMethodCode.VAULT]: {
-          enabled: false,
-        },
-        [PaymentMethodCode.FASTLANE]: {
-          enabled: false,
+          [PaymentMethodCode.APPLE_PAY]: {
+            enabled: false,
+          },
+          [PaymentMethodCode.GOOGLE_PAY]: {
+            render: (ctx) => {
+              const $googlePay = document.createElement('div');
+
+              PaymentServices.render(GooglePay, {
+                getCartId: () => ctx.cartId,
+                location: 'CHECKOUT',
+                onSuccess: () => {
+                  orderApi.placeOrder(ctx.cartId);
+                },
+                onError: (data) => {
+                  console.error('onError', data);
+                },
+                onButtonClick: (showPaymentSheet) => {
+                  if (handleValidation()) {
+                    showPaymentSheet();
+                  }
+                },
+              })($googlePay);
+
+              ctx.replaceHTML($googlePay);
+            },
+          },
+          [PaymentMethodCode.VAULT]: {
+            enabled: false,
+          },
+          [PaymentMethodCode.FASTLANE]: {
+            enabled: false,
+          },
         },
       },
-    },
-  })(container),
-);
+    })(container),
+  );
+}
 
 /**
  * Renders terms and conditions with agreement slots and manual consent mode
