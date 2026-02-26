@@ -405,7 +405,7 @@ export const renderPaymentMethods = async (container, creditCardFormRef, $placeO
       },
     })(container),
   );
-}
+};
 
 /**
  * Renders terms and conditions with agreement slots and manual consent mode
