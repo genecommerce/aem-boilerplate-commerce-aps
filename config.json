@@ -1,8 +1,8 @@
 {
   "public": {
     "default": {
-      "commerce-core-endpoint": "https://edge-sandbox-graph.adobe.io/api/a1ec6ca3-eca3-463d-a71c-84af3a559d21/graphql",
-      "commerce-endpoint": "https://edge-sandbox-graph.adobe.io/api/a1ec6ca3-eca3-463d-a71c-84af3a559d21/graphql",
+      "commerce-core-endpoint": "https://na1-sandbox.api.commerce.adobe.com/MdayE2CeJkJit9WpukRC8q/graphql",
+      "commerce-endpoint": "https://na1-sandbox.api.commerce.adobe.com/MdayE2CeJkJit9WpukRC8q/graphql",
       "payment-services-url": "https://d3j0sppn0vxopv.cloudfront.net/PaymentSDK.js",
       "headers": {
         "all": {
